@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Auth0.AuthenticationApi;
 using Auth0.AuthenticationApi.Models;
-using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using MvcApplication.ViewModels;
@@ -44,25 +41,26 @@ namespace MvcApplication.Controllers
                         new AuthenticationApiClient(
                             new Uri($"https://{ConfigurationManager.AppSettings["auth0:Domain"]}/"));
 
-                    var result = await client.AuthenticateAsync(new AuthenticationRequest
+                    var result = await client.GetTokenAsync(new ResourceOwnerTokenRequest
                     {
                         ClientId = ConfigurationManager.AppSettings["auth0:ClientId"],
+                        ClientSecret = ConfigurationManager.AppSettings["auth0:ClientSecret"],
                         Scope = "openid",
-                        Connection = "Database-Connection", // Specify the correct name of your DB connection
+                        Realm = "Username-Password-Authentication", // Specify the correct name of your DB connection
                         Username = vm.EmailAddress,
                         Password = vm.Password
                     });
 
                     // Get user info from token
-                    var user = await client.GetTokenInfoAsync(result.IdToken);
+                    var user = await client.GetUserInfoAsync(result.AccessToken);
 
                     // Create claims principal
                     var claimsIdentity = new ClaimsIdentity(new[]
                     {
                         new Claim(ClaimTypes.NameIdentifier, user.UserId),
                         new Claim(ClaimTypes.Name, user.FullName ?? user.Email),
-                        new Claim("http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/identityprovider", "ASP.NET Identity", "http://www.w3.org/2001/XMLSchema#string")
-                    }, DefaultAuthenticationTypes.ApplicationCookie);
+                        new Claim("http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/identityprovider", "Auth0", "http://www.w3.org/2001/XMLSchema#string")
+                    }, CookieAuthenticationDefaults.AuthenticationType);
 
                     // Sign user into cookie middleware
                     AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = false }, claimsIdentity);
