@@ -10,9 +10,9 @@ namespace MvcApplication.Controllers
 {
     public class AccountController : Controller
     {
-        public ActionResult Login()
+        public ActionResult Login(string returnUrl)
         {
-            return new ChallengeResult("Auth0", Url.Action("Index", "Home"));
+            return new ChallengeResult("Auth0", returnUrl ?? Url.Action("Index", "Home"));
         }
 
         [Authorize]
