@@ -3,12 +3,10 @@ using System.Configuration;
 using System.IdentityModel.Tokens;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.DataHandler.Encoder;
 using Microsoft.Owin.Security.OpenIdConnect;
 using Owin;
 
@@ -31,10 +29,10 @@ namespace MvcApplication
             var issuerSigningKey = new InMemorySymmetricSecurityKey(auth0ClientSecret);
 
             // Set Cookies as default authentication type
-            app.SetDefaultSignInAsAuthenticationType(DefaultAuthenticationTypes.ApplicationCookie);
+            app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+                AuthenticationType = CookieAuthenticationDefaults.AuthenticationType,
                 LoginPath = new PathString("/Account/Login")
             });
 
@@ -44,7 +42,7 @@ namespace MvcApplication
                 Authority = $"https://{auth0Domain}",
                 ClientId = auth0ClientId,
                 CallbackPath = new PathString("/signin-auth0"),
-                SignInAsAuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+                SignInAsAuthenticationType = CookieAuthenticationDefaults.AuthenticationType,
                 TokenValidationParameters = new TokenValidationParameters()
                 {
                     IssuerSigningKeyResolver = (token, securityToken, identifier, parameters) => issuerSigningKey

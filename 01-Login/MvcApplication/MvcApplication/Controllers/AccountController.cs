@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.Cookies;
 
 namespace MvcApplication.Controllers
 {
@@ -18,7 +15,7 @@ namespace MvcApplication.Controllers
         [Authorize]
         public void Logout()
         {
-            HttpContext.GetOwinContext().Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            HttpContext.GetOwinContext().Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationType);
             HttpContext.GetOwinContext().Authentication.SignOut(new AuthenticationProperties
             {
                 RedirectUri = Url.Action("Index", "Home")

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Configuration;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
@@ -22,10 +21,10 @@ namespace MvcApplication
             string auth0ClientId = ConfigurationManager.AppSettings["auth0:ClientId"];
 
             // Set Cookies as default authentication type
-            app.SetDefaultSignInAsAuthenticationType(DefaultAuthenticationTypes.ApplicationCookie);
+            app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+                AuthenticationType = CookieAuthenticationDefaults.AuthenticationType,
                 LoginPath = new PathString("/Account/Login")
             });
 
@@ -35,7 +34,7 @@ namespace MvcApplication
                 Authority = $"https://{auth0Domain}",
                 ClientId = auth0ClientId,
                 CallbackPath = new PathString("/signin-auth0"),
-                SignInAsAuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+                SignInAsAuthenticationType = CookieAuthenticationDefaults.AuthenticationType,
                 Notifications = new OpenIdConnectAuthenticationNotifications
                 {
                     RedirectToIdentityProvider = notification =>
